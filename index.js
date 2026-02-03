@@ -30,14 +30,17 @@ async function run() {
     await client.connect();
 
 
-    const jobsCollection= client.db('careerCode').collection('jobs');
-// jobs api
-app.get('/jobs',async(req,res)=>{
-  const cursor= jobsCollection.find();
-  const result= await cursor.toArray();
-  res.send(result);
-})
+    const jobsCollection = client.db('careerCode').collection('jobs');
+    // jobs api
+    app.get('/jobs', async (req, res) => {
+      const cursor = jobsCollection.find();
+      const result = await cursor.toArray();
+      res.send(result);
+    })
 
+    app.get('/jobs/:id', async(req,res)=>{
+
+    })
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
@@ -51,10 +54,10 @@ run().catch(console.dir);
 
 
 app.get('/', (req, res) => {
-    res.send('Career Code is Cooking at 2026')
+  res.send('Career Code is Cooking at 2026')
 })
 
 app.listen(port, () => {
-    // console.log(`career code server is running on port ${port}`)
-    console.log(`career code server is running on port ${port} at 2026`)
+  // console.log(`career code server is running on port ${port}`)
+  console.log(`career code server is running on port ${port} at 2026`)
 })
