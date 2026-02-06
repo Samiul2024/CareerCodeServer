@@ -31,12 +31,25 @@ async function run() {
 
 
     const jobsCollection = client.db('careerCode').collection('jobs');
+
+    const applicationCollection = client.db('careerCode').collection('applications')
     // jobs api
     app.get('/jobs', async (req, res) => {
       const cursor = jobsCollection.find();
       const result = await cursor.toArray();
       res.send(result);
     })
+
+
+    // job applications related apis
+    app.post('/applications', async (req, res) => {
+      const application = req.body;
+      console.log(application);
+      const result = await applicationCollection.insertOne(application);
+      res.send(result);
+
+    })
+
 
     app.get('/jobs/:id', async (req, res) => {
       const id = req.params.id;
