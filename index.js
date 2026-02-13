@@ -92,6 +92,14 @@ async function run() {
 
     })
 
+    // app.get('/applications/:id', () => { })
+    app.get('/applications/job/:job_id', async (req, res) => {
+      const job_id = req.params.job_id;
+      console.log(job_id);
+      const query = { jobId: job_id }
+      const result = await applicationCollection.find(query).toArray();
+      res.send(result);
+    })
 
     app.post('/applications', async (req, res) => {
       const application = req.body;
