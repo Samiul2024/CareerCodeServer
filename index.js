@@ -2,6 +2,7 @@ const express = require('express')
 const cors = require('cors')
 const app = express();
 const jwt = require('jsonwebtoken');
+const cookieParser = require('cookie-parser');
 const port = process.env.PORT || 3000;
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 require('dotenv').config()
@@ -9,7 +10,14 @@ require('dotenv').config()
 
 
 // middleware
-app.use(cors());
+app.use(cors({
+  origin: ['http://localhost:5173'],
+  credentials: true
+}));
+// app.use(cors({
+//   origin: ['http://localhost:5173'],
+//   credentials: true
+// }));
 app.use(express.json());
 
 
@@ -39,15 +47,30 @@ async function run() {
     // jwt token related apis starts here
 
     app.post('/jwt', async (req, res) => {
-      const email = req.body;
+      const userData = req.body;
+      const token = jwt.sign(userData, process.env.JWT_ACCESS_SECRET, { expiresIn: '1d' })
 
-      const user = { email }
-      const token = jwt.sign(user, 'secret', { expiresIn: '9h' });
-      res.send({ token })
+      // set token in the cookies
 
-      // const jwt = jwt.sign({})   // didn't came
+      res.cookie('token', token, {
+        httpOnly: true,
+        secure: false
+      })
 
+      res.send({ success: true })
     })
+
+
+    // app.post('/jwt', async (req, res) => {
+    //   const email = req.body;
+
+    //   const user = { email }
+    //   const token = jwt.sign(user, process.env.JWT_ACCESS_SECRET, { expiresIn: '9h' });
+    //   res.send({ token })
+
+    //   // const jwt = jwt.sign({})   // didn't came
+
+    // })
 
     // jwt token related apis ends here
 
@@ -111,6 +134,8 @@ async function run() {
     // job applications related apis
     app.get('/applications', async (req, res) => {
       const email = req.query.email;
+
+      console.log('inside applications api', req.cookies);
 
       const query = {
         applicant: email
