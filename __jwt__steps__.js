@@ -23,7 +23,11 @@ set the cookies
 axios.post('http://localhost:3000/jwt', userData, {
                     withCredentials: true
                 })
-                    5. in the cors settign set credentials and origin 
+
+
+or for fetch add option credentials: 'include'
+
+5. in the cors settign set credentials and origin 
 
                     
                     // middleware
@@ -32,7 +36,7 @@ axios.post('http://localhost:3000/jwt', userData, {
                       credentials: true
                     }));
 
-                    6. after generating the token set it to the cookies with some options
+ 6. after generating the token set it to the cookies with some options
 
                      res.cookie('token', token, {
         httpOnly: true,
@@ -40,4 +44,17 @@ axios.post('http://localhost:3000/jwt', userData, {
       })
 
       
+
+      ----------------
+
+  7. On time :  Use cookiesParser as middleware
+  8. for every api u want to verify token : in the client side : if using axious withCredentials: true
+  for fetch: credentials include
+
+  __________
+  verify kora
+  9.check token existance. if not, return 401--> unauthorized
+  10. jwt.verify function. if err return 401 --> unauthorized
+  11. if token is valid set the decoded value to the req object
+  12. if data asking for doesn't match with the owner/bearer of the token  --> 403 --> forbidden access
 */
