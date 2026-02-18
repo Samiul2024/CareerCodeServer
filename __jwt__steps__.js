@@ -13,11 +13,12 @@ using http only cookies
 ((((// //1. set cors middleware to allow cookies for our clientside ))))
 
 again
+
 1.from client side send the information(email,better: firebase er auth er token) to generate token
 2. on the server side , accept user information and if needed  validate it.
 3.generate token in the server side using secret  and expiresIn
 ________
-set the cookies
+set the token to the cookies
 4. while calling the api tell to use withCredentials
 
 axios.post('http://localhost:3000/jwt', userData, {
