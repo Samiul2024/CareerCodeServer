@@ -25,6 +25,18 @@ app.use(cors(
 //   credentials: true
 // }));
 app.use(express.json());
+app.use(cookieParser());
+
+var admin = require("firebase-admin");
+
+var serviceAccount = require("./firebase-admin-key.json");
+
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount)
+});
+// console.log("Firebase initialized successfully");
+
+
 // app.use(cookieParser());
 
 const logger = (req, res, next) => {
@@ -32,6 +44,37 @@ const logger = (req, res, next) => {
   next();
 }
 
+//latest one 
+const verifyToken = (req, res, next) => {
+  const token = req?.cookies?.token;
+  if (!token) {
+    return res.status(401).send({ message: 'unauthorized token' })
+  }
+  jwt.verify(token, process.env.JWT_ACCESS_SECRET, (err, decoded) => {
+    if (err) {
+      return res.status(401).send({ message: 'unauthorized access' })
+    }
+    req.decoded = decoded;
+    next();
+  })
+
+}
+
+const verifyFirebaseToken = async (req, res, next) => {
+  const authHeader = req.headers?.authorization;
+  const token = authHeader.split(' ')[1];
+  if (!token) {
+    return res.status(401).send({ message: 'unauthorized access' })
+  }
+  const userInfo = await admin.auth().verifyIdToken(token);
+  console.log('inside the token', userInfo);
+  req.tokenEmail = userInfo.email;
+  next();
+  // console.log('firebase token', token);
+
+}
+
+// previous one
 
 // const verifyToken = (req, res, next) => {
 //   const token = req?.cookies?.token;
@@ -148,7 +191,7 @@ async function run() {
     // })
 
 
-    app.get('/jobs/applications', async (req, res) => {
+    app.get('/jobs/applications', verifyToken, async (req, res) => {
       const email = req.query.email;
       const query = { hr_email: email };
       const jobs = await jobsCollection.find(query).toArray();
@@ -182,8 +225,12 @@ async function run() {
 
 
     // job applications related apis
-    app.get('/applications', logger, async (req, res) => {
+    app.get('/applications', logger, verifyFirebaseToken, async (req, res) => {
       const email = req.query.email;
+
+      if (req.tokenEmail != email) {
+        return res.status(403).send({ message: 'forbidden access' })
+      }
 
       // // console.log('inside applications api', req.cookies);
       // if (email != req.decoded.email) {

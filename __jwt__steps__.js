@@ -5,6 +5,8 @@
  * 3.on the client side set token to the localStorage()
  */
 
+const { JsonWebTokenError } = require("jsonwebtoken")
+
 
 /*
 
@@ -59,3 +61,20 @@ or for fetch add option credentials: 'include'
   11. if token is valid set the decoded value to the req object
   12. if data asking for doesn't match with the owner/bearer of the token  --> 403 --> forbidden access
 */
+
+
+/** 3 approach to jwt
+ * 
+ * ok type approach
+1) generate jwt > send to the client > store it in the localstoreage > send the token to the server using header > on the serrver: verify the token
+
+  *** Best Approach ***
+    2) generate token > set token to the cookies > ensure client and server exchanges cookies > on the server: verify token + others
+
+
+     
+    *** for us > firebase authentication approach
+
+1) already have the token in firebase(client side) >
+  we will send the token to the server using auth header  > verify the token + others
+   */
